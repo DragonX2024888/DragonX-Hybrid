@@ -16,19 +16,19 @@ The creation of DragonX Hybrid NFTs involves using DragonX tokens, accompanied b
 ## Classes of DragonX Hybrid NFTs
 
 ### Apprentice Dragon (Grey)
-Entry-level NFTs featuring the same iconic dragon design in a modest grey color. Requires 8 Million DragonX to mint, a mint fee of 800K TitanX, and a burn fee of 80K DragonX. Symbolizes the beginning of a journey and foundational learning.
+Entry-level NFTs featuring the same iconic dragon design in a modest grey color. Requires an 8.8 Million DragonX lockup, with a mint fee of 8.8K TitanX, and a burn fee of 8.8K DragonX. Symbolizes the beginning of a journey and foundational learning.
 
 ### Ninja Dragon (Darker Blue)
-A step above the Apprentice Dragons, this NFT showcases the same dragon design in a stealthy darker blue hue. Minting requires 88 Million DragonX, 8 Million TitanX for the mint fee, and 800K DragonX for the burn fee. Represents agility, stealth, and the mystery of the shadows.
+A step above the Apprentice Dragons, this NFT showcases the same dragon design in a stealthy darker blue hue. Minting requires an 88 Million DragonX lockup, 88K TitanX for the mint fee, and 88K DragonX for the burn fee. Represents agility, stealth, and the mystery of the shadows.
 
 ### Samurai Dragon (Yellow)
-Mid-tier NFTs featuring the consistent dragon design, now in a bold yellow. Requires 888 Million DragonX for minting, 88 Million TitanX for the mint fee, and 8 Million DragonX for the burn fee. Revered for symbolizing bravery, honor, and a warrior's spirit.
+Mid-tier NFTs featuring the consistent dragon design, now in a bold yellow. Requires an 888 Million DragonX lockup for minting, 880K TitanX for the mint fee, and 880K DragonX for the burn fee. Revered for symbolizing bravery, honor, and a warrior's spirit.
 
 ### Shogun Dragon (Red)
-Rare and commanding, these NFTs use the same dragon design, depicted in a powerful red. To mint, it takes 8 Billion DragonX, 888 Million TitanX as a mint fee, and 88 Million DragonX for the burn fee. Associated with leadership, strength, and strategic dominance.
+Rare and commanding, these NFTs use the same dragon design, depicted in a powerful red. To mint, it takes an 8.8 Billion DragonX lockup, 8.8 Million TitanX as a mint fee, and 8.8 Million DragonX for the burn fee. Associated with leadership, strength, and strategic dominance.
 
 ### Emperor Dragon (Gold)
-The pinnacle of the collection, featuring the iconic dragon in a majestic gold. Minting requires 88 Billion DragonX, with a mint fee of 8 Billion TitanX and a burn fee of 888 Million DragonX. Embodies ultimate sovereignty, wealth, and imperial power.
+The pinnacle of the collection, featuring the iconic dragon in a majestic gold. Minting requires an 88 Billion DragonX lockup, with a mint fee of 88.8 Million TitanX and a burn fee of 88.8 Million DragonX. Embodies ultimate sovereignty, wealth, and imperial power.
 
 While each class represents a different investment level and thematic significance, they all share the same underlying dragon artwork, distinguished by their unique color schemes.
 

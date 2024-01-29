@@ -27,26 +27,26 @@ export function toDragonTypeEnum(value: bigint): DragonTypes {
 }
 
 // Constants for Apprentice
-export const APPRENTICE_MINT_FEE = 800000n * 10n ** 18n // 800 K TitanX with 18 decimals
-export const APPRENTICE_BURN_FEE = 80000n * 10n ** 18n // 80 K DragonX with 18 decimals
-export const APPRENTICE_LOCKUP_AMOUNT = 8000000n * 10n ** 18n // 8 Million DragonX with 18 decimals
+export const APPRENTICE_MINT_FEE = 8800n * 10n ** 18n // 8.8 K TitanX with 18 decimals
+export const APPRENTICE_BURN_FEE = 8800n * 10n ** 18n // 8.8 K DragonX with 18 decimals
+export const APPRENTICE_LOCKUP_AMOUNT = 8800000n * 10n ** 18n // 8.8 Million DragonX with 18 decimals
 
 // Constants for Ninja
-export const NINJA_MINT_FEE = 8000000n * 10n ** 18n // 8 Million TitanX with 18 decimals
-export const NINJA_BURN_FEE = 800000n * 10n ** 18n // 800 K DragonX with 18 decimals
+export const NINJA_MINT_FEE = 88000n * 10n ** 18n // 88 K TitanX with 18 decimals
+export const NINJA_BURN_FEE = 88000n * 10n ** 18n // 88 K DragonX with 18 decimals
 export const NINJA_LOCKUP_AMOUNT = 88000000n * 10n ** 18n // 88 Million DragonX with 18 decimals
 
 // Constants for Samurai
-export const SAMURAI_MINT_FEE = 88000000n * 10n ** 18n // 88 Million TitanX with 18 decimals
-export const SAMURAI_BURN_FEE = 8000000n * 10n ** 18n // 8 Million DragonX with 18 decimals
+export const SAMURAI_MINT_FEE = 880000n * 10n ** 18n // 880 K TitanX with 18 decimals
+export const SAMURAI_BURN_FEE = 880000n * 10n ** 18n // 880 K DragonX with 18 decimals
 export const SAMURAI_LOCKUP_AMOUNT = 888000000n * 10n ** 18n // 888 Million DragonX with 18 decimals
 
 // Constants for Shogun
-export const SHOGUN_MINT_FEE = 888000000n * 10n ** 18n // 888 Million TitanX with 18 decimals
-export const SHOGUN_BURN_FEE = 88000000n * 10n ** 18n // 88 Million DragonX with 18 decimals
-export const SHOGUN_LOCKUP_AMOUNT = 8000000000n * 10n ** 18n // 8 Billion DragonX with 18 decimals
+export const SHOGUN_MINT_FEE = 8800000n * 10n ** 18n // 8.8 Million TitanX with 18 decimals
+export const SHOGUN_BURN_FEE = 8800000n * 10n ** 18n // 8.8 Million DragonX with 18 decimals
+export const SHOGUN_LOCKUP_AMOUNT = 8800000000n * 10n ** 18n // 8.8 Billion DragonX with 18 decimals
 
 // Constants for Emperor
-export const EMPEROR_MINT_FEE = 8000000000n * 10n ** 18n // 8 Billion TitanX with 18 decimals
-export const EMPEROR_BURN_FEE = 888000000n * 10n ** 18n // 888 Million DragonX with 18 decimals
+export const EMPEROR_MINT_FEE = 88800000n * 10n ** 18n // 88.8 Million TitanX with 18 decimals
+export const EMPEROR_BURN_FEE = 88800000n * 10n ** 18n // 88.8 Million DragonX with 18 decimals
 export const EMPEROR_LOCKUP_AMOUNT = 88000000000n * 10n ** 18n // 88 Billion DragonX with 18 decimals
