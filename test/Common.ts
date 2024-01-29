@@ -4,7 +4,9 @@ import {
 import { expect } from 'chai'
 import { ethers } from 'hardhat'
 
-import { deployDragonHybridFixture, prepareMintNft } from './Fixture'
+import { DragonHybrid as DragonNamespace } from '../typechain-types'
+
+import { deployDragonHybridFixture, prepareBurnNft, prepareMintNft, prepareMintNftGenesis } from './Fixture'
 import * as Constants from './Constants'
 
 describe('Common Tests', () => {
@@ -89,5 +91,80 @@ describe('Common Tests', () => {
   it('Should revert when trying to query base URI for non existing NFT', async () => {
     const { dragonHybrid } = await loadFixture(deployDragonHybridFixture)
     await expect(dragonHybrid.tokenURI(1)).to.be.revertedWithCustomError(dragonHybrid, 'ERC721NonexistentToken').withArgs(1)
+  })
+  it('Should return a detailed ownership information', async () => {
+    const fixture = await loadFixture(deployDragonHybridFixture)
+    const { user, dragonHybrid, genesis } = fixture
+
+    const ownerInfoUser = [
+      [[2n, 4n, 11n], 3n],
+      [[3n], 1n],
+      [[5n, 6n, 9n], 3n],
+      [[7n, 8n], 2n],
+      [[1n], 1n],
+    ] as DragonNamespace.DragonOwnerInfoStructOutput
+
+    const ownerInfoGenesis = [
+      [[10n], 1n],
+      [[], 0n] as any as DragonNamespace.DragonOwnerDetailsStructOutput,
+      [[], 0n] as any as DragonNamespace.DragonOwnerDetailsStructOutput,
+      [[], 0n] as any as DragonNamespace.DragonOwnerDetailsStructOutput,
+      [[], 0n] as any as DragonNamespace.DragonOwnerDetailsStructOutput,
+    ] as DragonNamespace.DragonOwnerInfoStructOutput
+
+    // 1
+    await prepareMintNft(fixture, Constants.DragonTypes.Emperor)
+    await dragonHybrid.connect(user).mint(Constants.DragonTypes.Emperor)
+    // 2
+    await prepareMintNft(fixture, Constants.DragonTypes.Apprentice)
+    await dragonHybrid.connect(user).mint(Constants.DragonTypes.Apprentice)
+    // 3
+    await prepareMintNft(fixture, Constants.DragonTypes.Ninja)
+    await dragonHybrid.connect(user).mint(Constants.DragonTypes.Ninja)
+    // 4
+    await prepareMintNft(fixture, Constants.DragonTypes.Apprentice)
+    await dragonHybrid.connect(user).mint(Constants.DragonTypes.Apprentice)
+    // 5
+    await prepareMintNft(fixture, Constants.DragonTypes.Samurai)
+    await dragonHybrid.connect(user).mint(Constants.DragonTypes.Samurai)
+    // 6
+    await prepareMintNft(fixture, Constants.DragonTypes.Samurai)
+    await dragonHybrid.connect(user).mint(Constants.DragonTypes.Samurai)
+    // 7
+    await prepareMintNft(fixture, Constants.DragonTypes.Shogun)
+    await dragonHybrid.connect(user).mint(Constants.DragonTypes.Shogun)
+    // 8
+    await prepareMintNft(fixture, Constants.DragonTypes.Shogun)
+    await dragonHybrid.connect(user).mint(Constants.DragonTypes.Shogun)
+    // 9
+    await prepareMintNft(fixture, Constants.DragonTypes.Samurai)
+    await dragonHybrid.connect(user).mint(Constants.DragonTypes.Samurai)
+    // 10
+    await prepareMintNftGenesis(fixture, Constants.DragonTypes.Apprentice)
+    await dragonHybrid.connect(genesis).mint(Constants.DragonTypes.Apprentice)
+    // 11
+    await prepareMintNft(fixture, Constants.DragonTypes.Apprentice)
+    await dragonHybrid.connect(user).mint(Constants.DragonTypes.Apprentice)
+
+    expect(await dragonHybrid.dragonsOfOwner(user.address)).to.eql(ownerInfoUser)
+    expect(await dragonHybrid.dragonsOfOwner(genesis.address)).to.eql(ownerInfoGenesis)
+
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Apprentice)).to.equal(4n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Ninja)).to.equal(1n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Samurai)).to.equal(3n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Shogun)).to.equal(2n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Emperor)).to.equal(1n)
+
+    await prepareBurnNft(fixture, 1n)
+    await dragonHybrid.connect(user).burn(1n)
+    await prepareBurnNft(fixture, 3n)
+    await dragonHybrid.connect(user).burn(3n)
+    await prepareBurnNft(fixture, 5n)
+    await dragonHybrid.connect(user).burn(5n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Apprentice)).to.equal(4n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Ninja)).to.equal(0n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Samurai)).to.equal(2n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Shogun)).to.equal(2n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Emperor)).to.equal(0n)
   })
 })

@@ -25,6 +25,24 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
     // -----------------------------------------
     // Type declarations
     // -----------------------------------------
+    /**
+     * @notice Detailed Ownership Info
+     */
+    struct DragonOwnerDetails {
+        uint256[] tokenIds;
+        uint256 balanceOf;
+    }
+
+    /**
+     * @notice Owner Info Query
+     */
+    struct DragonOwnerInfo {
+        DragonOwnerDetails Apprentice;
+        DragonOwnerDetails Ninja;
+        DragonOwnerDetails Samurai;
+        DragonOwnerDetails Shogun;
+        DragonOwnerDetails Emperor;
+    }
 
     // -----------------------------------------
     // State variables
@@ -33,6 +51,18 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
      * @notice maps NFT id to its metadata
      */
     mapping(uint256 => DragonTypes) public tokenIdToDragonType;
+
+    /**
+     * @notice the current total supply der individual dragon type
+     */
+    mapping(DragonTypes dragonType => uint256 totalSupply)
+        public totalSupplyPerDragon;
+
+    /**
+     * @notice balance of dragons per owner
+     */
+    mapping(address owner => mapping(DragonTypes dragonType => uint256 balanceOf))
+        public balanceOfDragon;
 
     /**
      * @notice The total amount of TitanX collected and send to the
@@ -192,6 +222,8 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
         // Update state
         totalMintFee += mintFee;
         tokenIdToDragonType[newTokenId] = dragonType;
+        totalSupplyPerDragon[dragonType] += 1;
+        balanceOfDragon[_msgSender()][dragonType] += 1;
         _nextTokenId++;
 
         // Emit event
@@ -226,6 +258,8 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
 
         // Update state
         totalBurnFee += burnFee;
+        totalSupplyPerDragon[dragonType] -= 1;
+        balanceOfDragon[from][dragonType] -= 1;
 
         // Release tokens to NFT owner
         dragonX.safeTransfer(_msgSender(), lockAmount);
@@ -233,6 +267,64 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
 
         // Emit event
         emit Burned(from, tokenId, dragonType, lockAmount, burnFee);
+    }
+
+    /**
+     * @notice Retrieves detailed dragon ownership information for a given owner.
+     * @param owner The address whose dragon ownership information is being queried.
+     * @return ownerInfo A DragonOwnerInfo struct containing detailed information about the dragons owned.
+     */
+    function dragonsOfOwner(
+        address owner
+    ) external view returns (DragonOwnerInfo memory ownerInfo) {
+        // Initialize the balances
+        ownerInfo.Apprentice.balanceOf = balanceOfDragon[owner][
+            DragonTypes.Apprentice
+        ];
+        ownerInfo.Ninja.balanceOf = balanceOfDragon[owner][DragonTypes.Ninja];
+        ownerInfo.Samurai.balanceOf = balanceOfDragon[owner][
+            DragonTypes.Samurai
+        ];
+        ownerInfo.Shogun.balanceOf = balanceOfDragon[owner][DragonTypes.Shogun];
+        ownerInfo.Emperor.balanceOf = balanceOfDragon[owner][
+            DragonTypes.Emperor
+        ];
+
+        // Initialize the tokenIds arrays with the correct sizes
+        ownerInfo.Apprentice.tokenIds = new uint256[](
+            ownerInfo.Apprentice.balanceOf
+        );
+        ownerInfo.Ninja.tokenIds = new uint256[](ownerInfo.Ninja.balanceOf);
+        ownerInfo.Samurai.tokenIds = new uint256[](ownerInfo.Samurai.balanceOf);
+        ownerInfo.Shogun.tokenIds = new uint256[](ownerInfo.Shogun.balanceOf);
+        ownerInfo.Emperor.tokenIds = new uint256[](ownerInfo.Emperor.balanceOf);
+
+        uint256 ownerBalance = balanceOf(owner);
+        uint256[] memory counters = new uint256[](5);
+
+        // Loop to populate the tokenIds
+        for (uint256 idx = 0; idx < ownerBalance; idx++) {
+            uint256 tokenId = tokenOfOwnerByIndex(owner, idx);
+            DragonTypes dragonType = tokenIdToDragonType[tokenId];
+
+            if (dragonType == DragonTypes.Apprentice) {
+                ownerInfo.Apprentice.tokenIds[counters[0]++] = tokenId;
+            }
+            if (dragonType == DragonTypes.Ninja) {
+                ownerInfo.Ninja.tokenIds[counters[1]++] = tokenId;
+            }
+            if (dragonType == DragonTypes.Samurai) {
+                ownerInfo.Samurai.tokenIds[counters[2]++] = tokenId;
+            }
+            if (dragonType == DragonTypes.Shogun) {
+                ownerInfo.Shogun.tokenIds[counters[3]++] = tokenId;
+            }
+            if (dragonType == DragonTypes.Emperor) {
+                ownerInfo.Emperor.tokenIds[counters[4]++] = tokenId;
+            }
+        }
+
+        return ownerInfo;
     }
 
     /**
@@ -289,7 +381,6 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
             mintFee = APPRENTICE_MINT_FEE;
             lockAmount = APPRENTICE_LOCKUP_AMOUNT;
         }
-
         if (dragonType == DragonTypes.Ninja) {
             burnFee = NINJA_BURN_FEE;
             mintFee = NINJA_MINT_FEE;

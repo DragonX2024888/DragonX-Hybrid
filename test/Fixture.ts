@@ -39,10 +39,15 @@ export async function deployDragonHybridFixture(): Promise<Fixture> {
   const swap = await fSwap.deploy()
 
   // Market buy TitanX
+  await swap.connect(genesis).swapETHForTitanX({ value: ethers.parseEther('10') })
   await swap.connect(user).swapETHForTitanX({ value: ethers.parseEther('500') })
 
   // Use half of the balance to mint DragonX
-  const mintAmount = (await titanX.balanceOf(user.address) * 100n) / 200n
+  let mintAmount = (await titanX.balanceOf(genesis.address) * 100n) / 200n
+  await titanX.connect(genesis).approve(await dragonX.getAddress(), mintAmount)
+  await dragonX.connect(genesis).mint(mintAmount)
+
+  mintAmount = (await titanX.balanceOf(user.address) * 100n) / 200n
   await titanX.connect(user).approve(await dragonX.getAddress(), mintAmount)
   await dragonX.connect(user).mint(mintAmount)
 
@@ -109,6 +114,15 @@ export async function prepareMintNft(fixture: Fixture, dragonType: Constants.Dra
 
   await titanX.connect(user).approve(dragonHybridAddress, details.mintFee)
   await dragonX.connect(user).approve(dragonHybridAddress, details.lockupAmount)
+}
+
+export async function prepareMintNftGenesis(fixture: Fixture, dragonType: Constants.DragonTypes) {
+  const { titanX, dragonX, dragonHybrid, genesis } = fixture
+  const dragonHybridAddress = await dragonHybrid.getAddress()
+  const details = getDragonDetails(dragonType)
+
+  await titanX.connect(genesis).approve(dragonHybridAddress, details.mintFee)
+  await dragonX.connect(genesis).approve(dragonHybridAddress, details.lockupAmount)
 }
 
 export async function prepareBurnNft(fixture: Fixture, id: bigint) {
