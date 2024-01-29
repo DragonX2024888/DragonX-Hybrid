@@ -188,16 +188,20 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
     /**
      * @dev Mints a new token of a specified dragon type.
      *
-     *      The function first determines the lock amount and mint fee for the specified dragon type by calling `getDragonDetails`.
-     *      It then transfers the required amount of DragonX tokens from the caller to the contract itself and updates the `vault`.
-     *      The TitanX mint fee is transferred from the caller to the DragonX vault, and the DragonX vault is then updated.
-     *      A new token ID is generated, and a new NFT is minted to the caller. The function updates the total mint fee collected,
-     *      maps the new token ID to its dragon type, and increments the `_nextTokenId`.
-     *      Finally, the function emits a `Minted` event with details of the minting transaction.
+     * This function first determines the lock amount and mint fee for the specified
+     * dragon type by calling `getDragonDetails`. It transfers the required amount of
+     * DragonX tokens from the caller to the contract, updating the `vault`.
+     * The TitanX mint fee is transferred from the caller to the DragonX vault, after which
+     * the vault's balance is updated.
+     * A new token ID is generated, and a new NFT is minted for the caller. The function
+     * updates the total mint fee collected, maps the new token ID to its dragon type,
+     * and increments the `_nextTokenId`.
+     * Finally, the function emits a `Minted` event, detailing the minting transaction.
      *
      * @param dragonType The type of dragon to mint, as defined in the `DragonTypes` enum.
-     * @return newTokenId The newly minted token's ID.
+     * @return newTokenId The ID of the newly minted token.
      */
+
     function mint(
         DragonTypes dragonType
     ) external returns (uint256 newTokenId) {
