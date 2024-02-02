@@ -70,6 +70,26 @@ describe('Burn', () => {
     await mintNft(fixture, Constants.DragonTypes.Samurai)
     await burnNft(fixture, 1n, Constants.DragonTypes.Samurai)
   })
+  it('Should allow to burn an NFT after ownership has been transfered', async () => {
+    const fixture = await loadFixture(deployDragonHybridFixture)
+    const { dragonX, dragonHybrid, user, others } = fixture
+    const otherUser = others[0]
+
+    await mintNft(fixture, Constants.DragonTypes.Apprentice)
+
+    // Transfer
+    await dragonHybrid.connect(user).transferFrom(user.address, otherUser.address, 1n)
+
+    // Prepare Burn
+    const dragonHybridAddress = await dragonHybrid.getAddress()
+    const details = getDragonDetails(Constants.DragonTypes.Apprentice)
+    await dragonX.connect(user).transfer(otherUser.address, details.burnFee)
+    await dragonX.connect(otherUser).approve(dragonHybridAddress, details.burnFee)
+
+    // Burn
+    await expect(dragonHybrid.connect(user).burn(1n)).to.be.reverted
+    await expect(dragonHybrid.connect(otherUser).burn(1n)).to.not.be.reverted
+  })
   it('Should update state correctly when burning two Samurai NFT', async () => {
     const fixture = await loadFixture(deployDragonHybridFixture)
     const vault = await fixture.dragonHybrid.vault()

@@ -94,7 +94,7 @@ describe('Common Tests', () => {
   })
   it('Should return a detailed ownership information', async () => {
     const fixture = await loadFixture(deployDragonHybridFixture)
-    const { user, dragonHybrid, genesis } = fixture
+    const { user, dragonHybrid, genesis, others } = fixture
 
     const ownerInfoUser = [
       [[2n, 4n, 11n], 3n],
@@ -107,6 +107,15 @@ describe('Common Tests', () => {
     const ownerInfoGenesis = [
       [[10n], 1n],
       [[], 0n] as any as DragonNamespace.DragonOwnerDetailsStructOutput,
+      [[], 0n] as any as DragonNamespace.DragonOwnerDetailsStructOutput,
+      [[], 0n] as any as DragonNamespace.DragonOwnerDetailsStructOutput,
+      [[], 0n] as any as DragonNamespace.DragonOwnerDetailsStructOutput,
+    ] as DragonNamespace.DragonOwnerInfoStructOutput
+
+    // this user does not mint but gets an NFT send by the user
+    const ownerInfoOtherUser = [
+      [[], 0n] as any as DragonNamespace.DragonOwnerDetailsStructOutput,
+      [[12n], 1n],
       [[], 0n] as any as DragonNamespace.DragonOwnerDetailsStructOutput,
       [[], 0n] as any as DragonNamespace.DragonOwnerDetailsStructOutput,
       [[], 0n] as any as DragonNamespace.DragonOwnerDetailsStructOutput,
@@ -145,12 +154,19 @@ describe('Common Tests', () => {
     // 11
     await prepareMintNft(fixture, Constants.DragonTypes.Apprentice)
     await dragonHybrid.connect(user).mint(Constants.DragonTypes.Apprentice)
+    // 12
+    await prepareMintNft(fixture, Constants.DragonTypes.Ninja)
+    await dragonHybrid.connect(user).mint(Constants.DragonTypes.Ninja)
+
+    // Transfer NFT to other user account
+    await dragonHybrid.connect(user).transferFrom(user.address, others[0].address, 12n)
 
     expect(await dragonHybrid.dragonsOfOwner(user.address)).to.eql(ownerInfoUser)
     expect(await dragonHybrid.dragonsOfOwner(genesis.address)).to.eql(ownerInfoGenesis)
+    expect(await dragonHybrid.dragonsOfOwner(others[0].address)).to.eql(ownerInfoOtherUser)
 
     expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Apprentice)).to.equal(4n)
-    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Ninja)).to.equal(1n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Ninja)).to.equal(2n)
     expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Samurai)).to.equal(3n)
     expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Shogun)).to.equal(2n)
     expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Emperor)).to.equal(1n)
@@ -162,9 +178,153 @@ describe('Common Tests', () => {
     await prepareBurnNft(fixture, 5n)
     await dragonHybrid.connect(user).burn(5n)
     expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Apprentice)).to.equal(4n)
-    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Ninja)).to.equal(0n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Ninja)).to.equal(1n)
     expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Samurai)).to.equal(2n)
     expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Shogun)).to.equal(2n)
     expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Emperor)).to.equal(0n)
+  })
+  it('should track total supply of dragons', async () => {
+    const fixture = await loadFixture(deployDragonHybridFixture)
+    const { user, dragonHybrid } = fixture
+
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Apprentice)).to.be.equal(0n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Ninja)).to.be.equal(0n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Samurai)).to.be.equal(0n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Shogun)).to.be.equal(0n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Emperor)).to.be.equal(0n)
+
+    await prepareMintNft(fixture, Constants.DragonTypes.Apprentice)
+    await dragonHybrid.connect(user).mint(Constants.DragonTypes.Apprentice)
+    await prepareMintNft(fixture, Constants.DragonTypes.Ninja)
+    await dragonHybrid.connect(user).mint(Constants.DragonTypes.Ninja)
+    await prepareMintNft(fixture, Constants.DragonTypes.Samurai)
+    await dragonHybrid.connect(user).mint(Constants.DragonTypes.Samurai)
+    await prepareMintNft(fixture, Constants.DragonTypes.Shogun)
+    await dragonHybrid.connect(user).mint(Constants.DragonTypes.Shogun)
+    await prepareMintNft(fixture, Constants.DragonTypes.Emperor)
+    await dragonHybrid.connect(user).mint(Constants.DragonTypes.Emperor)
+
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Apprentice)).to.be.equal(1n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Ninja)).to.be.equal(1n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Samurai)).to.be.equal(1n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Shogun)).to.be.equal(1n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Emperor)).to.be.equal(1n)
+
+    await prepareMintNft(fixture, Constants.DragonTypes.Apprentice)
+    await dragonHybrid.connect(user).mint(Constants.DragonTypes.Apprentice)
+    await prepareMintNft(fixture, Constants.DragonTypes.Ninja)
+    await dragonHybrid.connect(user).mint(Constants.DragonTypes.Ninja)
+    await prepareMintNft(fixture, Constants.DragonTypes.Samurai)
+    await dragonHybrid.connect(user).mint(Constants.DragonTypes.Samurai)
+    await prepareMintNft(fixture, Constants.DragonTypes.Shogun)
+    await dragonHybrid.connect(user).mint(Constants.DragonTypes.Shogun)
+
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Apprentice)).to.be.equal(2n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Ninja)).to.be.equal(2n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Samurai)).to.be.equal(2n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Shogun)).to.be.equal(2n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Emperor)).to.be.equal(1n)
+
+    await prepareBurnNft(fixture, 9n)
+    await dragonHybrid.connect(user).burn(9n)
+    await prepareBurnNft(fixture, 8n)
+    await dragonHybrid.connect(user).burn(8n)
+    await prepareBurnNft(fixture, 7n)
+    await dragonHybrid.connect(user).burn(7n)
+    await prepareBurnNft(fixture, 6n)
+    await dragonHybrid.connect(user).burn(6n)
+
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Apprentice)).to.be.equal(1n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Ninja)).to.be.equal(1n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Samurai)).to.be.equal(1n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Shogun)).to.be.equal(1n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Emperor)).to.be.equal(1n)
+
+    await prepareBurnNft(fixture, 5n)
+    await dragonHybrid.connect(user).burn(5n)
+    await prepareBurnNft(fixture, 4n)
+    await dragonHybrid.connect(user).burn(4n)
+    await prepareBurnNft(fixture, 3n)
+    await dragonHybrid.connect(user).burn(3n)
+    await prepareBurnNft(fixture, 2n)
+    await dragonHybrid.connect(user).burn(2n)
+    await prepareBurnNft(fixture, 1n)
+    await dragonHybrid.connect(user).burn(1n)
+
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Apprentice)).to.be.equal(0n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Ninja)).to.be.equal(0n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Samurai)).to.be.equal(0n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Shogun)).to.be.equal(0n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Emperor)).to.be.equal(0n)
+  })
+  it('should track dragon balances on transfer', async () => {
+    const fixture = await loadFixture(deployDragonHybridFixture)
+    const { user, dragonHybrid, others } = fixture
+    const otherUser = others[0]
+
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Apprentice)).to.be.equal(0n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Ninja)).to.be.equal(0n)
+    expect(await dragonHybrid.balanceOfDragon(user.address, Constants.DragonTypes.Apprentice)).to.be.equal(0n)
+    expect(await dragonHybrid.balanceOfDragon(user.address, Constants.DragonTypes.Ninja)).to.be.equal(0n)
+    expect(await dragonHybrid.balanceOfDragon(otherUser.address, Constants.DragonTypes.Apprentice)).to.be.equal(0n)
+    expect(await dragonHybrid.balanceOfDragon(otherUser.address, Constants.DragonTypes.Ninja)).to.be.equal(0n)
+
+    await prepareMintNft(fixture, Constants.DragonTypes.Apprentice)
+    await dragonHybrid.connect(user).mint(Constants.DragonTypes.Apprentice)
+    await prepareMintNft(fixture, Constants.DragonTypes.Apprentice)
+    await dragonHybrid.connect(user).mint(Constants.DragonTypes.Apprentice)
+    await prepareMintNft(fixture, Constants.DragonTypes.Ninja)
+    await dragonHybrid.connect(user).mint(Constants.DragonTypes.Ninja)
+    await prepareMintNft(fixture, Constants.DragonTypes.Ninja)
+    await dragonHybrid.connect(user).mint(Constants.DragonTypes.Ninja)
+
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Apprentice)).to.be.equal(2n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Ninja)).to.be.equal(2n)
+    expect(await dragonHybrid.balanceOfDragon(user.address, Constants.DragonTypes.Apprentice)).to.be.equal(2n)
+    expect(await dragonHybrid.balanceOfDragon(user.address, Constants.DragonTypes.Ninja)).to.be.equal(2n)
+    expect(await dragonHybrid.balanceOfDragon(otherUser.address, Constants.DragonTypes.Apprentice)).to.be.equal(0n)
+    expect(await dragonHybrid.balanceOfDragon(otherUser.address, Constants.DragonTypes.Ninja)).to.be.equal(0n)
+
+    await dragonHybrid.connect(user).transferFrom(user.address, otherUser.address, 1n)
+    await dragonHybrid.connect(user).transferFrom(user.address, otherUser.address, 3n)
+
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Apprentice)).to.be.equal(2n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Ninja)).to.be.equal(2n)
+    expect(await dragonHybrid.balanceOfDragon(user.address, Constants.DragonTypes.Apprentice)).to.be.equal(1n)
+    expect(await dragonHybrid.balanceOfDragon(user.address, Constants.DragonTypes.Ninja)).to.be.equal(1n)
+    expect(await dragonHybrid.balanceOfDragon(otherUser.address, Constants.DragonTypes.Apprentice)).to.be.equal(1n)
+    expect(await dragonHybrid.balanceOfDragon(otherUser.address, Constants.DragonTypes.Ninja)).to.be.equal(1n)
+
+    await dragonHybrid.connect(user).transferFrom(user.address, otherUser.address, 2n)
+    await dragonHybrid.connect(user).transferFrom(user.address, otherUser.address, 4n)
+
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Apprentice)).to.be.equal(2n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Ninja)).to.be.equal(2n)
+    expect(await dragonHybrid.balanceOfDragon(user.address, Constants.DragonTypes.Apprentice)).to.be.equal(0n)
+    expect(await dragonHybrid.balanceOfDragon(user.address, Constants.DragonTypes.Ninja)).to.be.equal(0n)
+    expect(await dragonHybrid.balanceOfDragon(otherUser.address, Constants.DragonTypes.Apprentice)).to.be.equal(2n)
+    expect(await dragonHybrid.balanceOfDragon(otherUser.address, Constants.DragonTypes.Ninja)).to.be.equal(2n)
+
+    await dragonHybrid.connect(otherUser).transferFrom(otherUser.address, user.address, 1n)
+    await dragonHybrid.connect(otherUser).transferFrom(otherUser.address, user.address, 3n)
+
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Apprentice)).to.be.equal(2n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Ninja)).to.be.equal(2n)
+    expect(await dragonHybrid.balanceOfDragon(user.address, Constants.DragonTypes.Apprentice)).to.be.equal(1n)
+    expect(await dragonHybrid.balanceOfDragon(user.address, Constants.DragonTypes.Ninja)).to.be.equal(1n)
+    expect(await dragonHybrid.balanceOfDragon(otherUser.address, Constants.DragonTypes.Apprentice)).to.be.equal(1n)
+    expect(await dragonHybrid.balanceOfDragon(otherUser.address, Constants.DragonTypes.Ninja)).to.be.equal(1n)
+
+    await prepareBurnNft(fixture, 1n)
+    await dragonHybrid.connect(user).burn(1n)
+    await prepareBurnNft(fixture, 3n)
+    await dragonHybrid.connect(user).burn(3n)
+
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Apprentice)).to.be.equal(1n)
+    expect(await dragonHybrid.totalSupplyPerDragon(Constants.DragonTypes.Ninja)).to.be.equal(1n)
+    expect(await dragonHybrid.balanceOfDragon(user.address, Constants.DragonTypes.Apprentice)).to.be.equal(0n)
+    expect(await dragonHybrid.balanceOfDragon(user.address, Constants.DragonTypes.Ninja)).to.be.equal(0n)
+    expect(await dragonHybrid.balanceOfDragon(otherUser.address, Constants.DragonTypes.Apprentice)).to.be.equal(1n)
+    expect(await dragonHybrid.balanceOfDragon(otherUser.address, Constants.DragonTypes.Ninja)).to.be.equal(1n)
   })
 })

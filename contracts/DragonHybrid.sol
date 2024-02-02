@@ -221,13 +221,15 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
 
         // Mint a new NFT
         newTokenId = _nextTokenId;
+
+        // Map token ID to dragon type
+        tokenIdToDragonType[newTokenId] = dragonType;
+
+        // Mint the new NFT (which will update balance tracking)
         _mint(_msgSender(), newTokenId);
 
         // Update state
         totalMintFee += mintFee;
-        tokenIdToDragonType[newTokenId] = dragonType;
-        totalSupplyPerDragon[dragonType] += 1;
-        balanceOfDragon[_msgSender()][dragonType] += 1;
         _nextTokenId++;
 
         // Emit event
@@ -262,8 +264,6 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
 
         // Update state
         totalBurnFee += burnFee;
-        totalSupplyPerDragon[dragonType] -= 1;
-        balanceOfDragon[from][dragonType] -= 1;
 
         // Release tokens to NFT owner
         dragonX.safeTransfer(_msgSender(), lockAmount);
@@ -411,6 +411,37 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
     // Internal functions
     // -----------------------------------------
     /**
+     * @dev override update implementation to keep Dragon balance and ownership information in sync
+     * this will call the base ERC721 class to allow for standard ownership tracking
+     * @param to the new token owner
+     * @param tokenId the token ID
+     * @param auth authentication if needed
+     */
+    function _update(
+        address to,
+        uint256 tokenId,
+        address auth
+    ) internal virtual override returns (address) {
+        address previousOwner = super._update(to, tokenId, auth);
+        DragonTypes dragonType = tokenIdToDragonType[tokenId];
+
+        if (previousOwner == address(0)) {
+            _addDragonToTotalDragonSupply(dragonType);
+            /* istanbul ignore else */
+        } else if (previousOwner != to) {
+            _removeDragonFromOwnerBalance(previousOwner, dragonType);
+        }
+
+        if (to == address(0)) {
+            _removeDragonFromTotalDragonSupply(dragonType);
+        } else if (previousOwner != to) {
+            _addDragonToOwnerBalance(to, dragonType);
+        }
+
+        return previousOwner;
+    }
+
+    /**
      * @dev get the base URI
      */
     function _baseURI() internal view virtual override returns (string memory) {
@@ -420,4 +451,45 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
     // -----------------------------------------
     // Private functions
     // -----------------------------------------
+    /**
+     * @dev remove a dragon from the owner balance tracking
+     * @param previousOwner the previous owner
+     * @param dragonType the type of dragon the owner does not own anymore
+     */
+    function _removeDragonFromOwnerBalance(
+        address previousOwner,
+        DragonTypes dragonType
+    ) private {
+        balanceOfDragon[previousOwner][dragonType] -= 1;
+    }
+
+    /**
+     * @dev add a dragon to the owner balance tracking
+     * @param newOwner the new owner
+     * @param dragonType the type of dragon the owner now owns
+     */
+    function _addDragonToOwnerBalance(
+        address newOwner,
+        DragonTypes dragonType
+    ) private {
+        balanceOfDragon[newOwner][dragonType] += 1;
+    }
+
+    /**
+     * remove a dragon to the total dragon supply
+     * @param dragonType the dragon type which was removed from circulation
+     */
+    function _removeDragonFromTotalDragonSupply(
+        DragonTypes dragonType
+    ) private {
+        totalSupplyPerDragon[dragonType] -= 1;
+    }
+
+    /**
+     * add a dragon to the total dragon supply
+     * @param dragonType the dragon type which was added to circulation
+     */
+    function _addDragonToTotalDragonSupply(DragonTypes dragonType) private {
+        totalSupplyPerDragon[dragonType] += 1;
+    }
 }
