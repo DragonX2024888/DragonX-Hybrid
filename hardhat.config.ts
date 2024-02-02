@@ -34,7 +34,7 @@ const config: HardhatUserConfig = {
   solidity: {
     compilers: [
       {
-        version: '0.8.20', // limit compiler version for other chains than ethereum mainnet
+        version: '0.8.24',
         settings: {
           optimizer: {
             enabled: true,
