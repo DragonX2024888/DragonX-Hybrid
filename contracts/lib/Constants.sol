@@ -12,15 +12,10 @@ uint24 constant FEE_TIER = 10000;
 
 // Dragon Types
 enum DragonTypes {
-    // 8 Million DragonX lock up, mint fee: 800 K TitanX, burn fee: 80 K DragonX
     Apprentice,
-    // 88 Million DragonX lock up, mint fee: 8 Million TitanX, burn fee: 800 K DragonX
     Ninja,
-    // 888 Million DragonX, mint fee: 88 Million TitanX, burn fee: 8 Million DragonX
     Samurai,
-    // 8 Billion DragonX, mint fee: 888 Million TitanX, burn fee: 88 Million DragonX
     Shogun,
-    // 88 Billion DragonX, mint fee: 8 Billion TitanX, burn fee: 888 Million DragonX
     Emperor
 }
 

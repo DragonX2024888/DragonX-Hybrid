@@ -14,13 +14,13 @@ describe('Common Tests', () => {
     const { dragonHybrid, genesis } = await loadFixture(deployDragonHybridFixture)
     await expect(genesis.sendTransaction({
       to: await dragonHybrid.getAddress(), data: '0x1234',
-    })).to.be.revertedWith('noop')
+    })).to.be.reverted
   })
   it('Should revert if a user sends ETH on DragonHybrid', async () => {
     const { user, dragonHybrid } = await loadFixture(deployDragonHybridFixture)
     await expect(user.sendTransaction({
       to: await dragonHybrid.getAddress(), value: ethers.parseEther('1'),
-    })).to.be.revertedWith('noop')
+    })).to.be.reverted
   })
   it('Should revert when fallback function is triggered on DragonBurnProxy', async () => {
     const { dragonBurnProxy, genesis } = await loadFixture(deployDragonHybridFixture)

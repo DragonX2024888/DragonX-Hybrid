@@ -14,7 +14,7 @@ import "./lib/interfaces/IDragonX.sol";
 import "./DragonBurnProxy.sol";
 
 /*
- * @title The DragonX Hybrid Contranct
+ * @title The DragonX Hybrid Contract
  * @author The DragonX devs
  */
 contract DragonHybrid is ERC721Enumerable, Ownable2Step {
@@ -48,7 +48,7 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
     // State variables
     // -----------------------------------------
     /**
-     * @notice the current total supply der individual dragon type
+     * @notice the current total supply per individual dragon type
      */
     mapping(DragonTypes dragonType => uint256 totalSupply)
         public totalSupplyPerDragon;
@@ -71,7 +71,7 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
     uint256 public totalBurnFee;
 
     /**
-     * @notice The DragonX vault representing the tockens locked in the bridge
+     * @notice The DragonX vault representing the tokens locked in the bridge
      */
     uint256 public vault;
 
@@ -88,7 +88,7 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
     /**
      * @dev the burn proxy contract for the burn fee
      */
-    address private _burnProxyAddress;
+    address immutable private _burnProxyAddress;
 
     /**
      * @notice maps NFT id to its metadata
@@ -163,24 +163,10 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
     // -----------------------------------------
     // Receive function
     // -----------------------------------------
-    /**
-     * @dev Receive function to handle plain Ether transfers.
-     * Always revert.
-     */
-    receive() external payable {
-        revert("noop");
-    }
 
     // -----------------------------------------
     // Fallback function
     // -----------------------------------------
-    /**
-     * @dev Fallback function to handle non-function calls or Ether transfers if receive() doesn't exist.
-     * Always revert.
-     */
-    fallback() external {
-        revert("noop");
-    }
 
     // -----------------------------------------
     // External functions
@@ -212,12 +198,8 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
         (uint256 mintFee, , uint256 lockAmount) = getDragonDetails(dragonType);
 
         // Transfer and lock DragonX in the NFT bridge
-        dragonX.safeTransferFrom(_msgSender(), address(this), lockAmount);
+        dragonX.safeTransferFrom(msg.sender, address(this), lockAmount);
         vault += lockAmount;
-
-        // Transfer TitanX mint fee to the DragonX vault and update the vault
-        titanX.safeTransferFrom(_msgSender(), DRAGONX_ADDRESS, mintFee);
-        dragonX.updateVault();
 
         // Mint a new NFT
         newTokenId = _nextTokenId;
@@ -226,14 +208,18 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
         _tokenIdToDragonType[newTokenId] = dragonType;
 
         // Mint the new NFT (which will update balance tracking)
-        _mint(_msgSender(), newTokenId);
+        _mint(msg.sender, newTokenId);
 
         // Update state
         totalMintFee += mintFee;
         _nextTokenId++;
 
+        // Transfer TitanX mint fee to the DragonX vault and update the vault
+        titanX.safeTransferFrom(msg.sender, DRAGONX_ADDRESS, mintFee);
+        dragonX.updateVault();
+
         // Emit event
-        emit Minted(_msgSender(), newTokenId, dragonType, lockAmount, mintFee);
+        emit Minted(msg.sender, newTokenId, dragonType, lockAmount, mintFee);
     }
 
     /**
@@ -253,21 +239,21 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
 
         // Setting an "auth" arguments enables the `_isAuthorized` check which verifies that the token exists
         // (from != 0). Therefore, it is not needed to verify that the return value is not 0 here.
-        address owner = _update(address(0), tokenId, _msgSender());
+        address owner = _update(address(0), tokenId, msg.sender);
 
         // Determine locked amount and burn fee based on the dragon type
         (, uint256 burnFee, uint256 lockAmount) = getDragonDetails(dragonType);
 
         // Send burn fee to burn proxy
-        dragonX.safeTransferFrom(_msgSender(), _burnProxyAddress, burnFee);
+        dragonX.safeTransferFrom(msg.sender, _burnProxyAddress, burnFee);
         burnProxy.burn();
 
         // Update state
         totalBurnFee += burnFee;
 
         // Release tokens to NFT owner
-        dragonX.safeTransfer(owner, lockAmount);
         vault -= lockAmount;
+        dragonX.safeTransfer(owner, lockAmount);
 
         // Emit event
         emit Burned(owner, tokenId, dragonType, lockAmount, burnFee);
@@ -378,7 +364,7 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
 
         string memory baseURI = _baseURI();
         return
-            string(abi.encodePacked(baseURI, uint256(dragonType).toString()));
+            string.concat(baseURI, uint256(dragonType).toString());
     }
 
     /**
