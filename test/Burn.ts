@@ -90,6 +90,29 @@ describe('Burn', () => {
     await expect(dragonHybrid.connect(user).burn(1n)).to.be.reverted
     await expect(dragonHybrid.connect(otherUser).burn(1n)).to.not.be.reverted
   })
+  it('Should always send locked DragonX to the owner', async () => {
+    const fixture = await loadFixture(deployDragonHybridFixture)
+    const { dragonX, dragonHybrid, burnDragonHybridProxy, user } = fixture
+    const details = getDragonDetails(Constants.DragonTypes.Apprentice)
+
+    // Mint
+    await mintNft(fixture, Constants.DragonTypes.Apprentice)
+    expect(await dragonX.balanceOf(await burnDragonHybridProxy.getAddress())).to.be.equal(0n)
+
+    const balance = await dragonX.balanceOf(user.address)
+    const expectedBalance = balance + details.lockupAmount - details.burnFee
+
+    // Prepare the burn
+    await dragonX.connect(user).transfer(await burnDragonHybridProxy.getAddress(), details.burnFee)
+    await dragonHybrid.connect(user).approve(await burnDragonHybridProxy.getAddress(), 1n)
+
+    // Burn through another authorised contract
+    await burnDragonHybridProxy.connect(user)
+      .burn(1n, details.burnFee, await dragonHybrid.getAddress(), await dragonX.getAddress())
+
+    expect(await dragonX.balanceOf(user.address)).to.be.equal(expectedBalance)
+    expect(await dragonX.balanceOf(await burnDragonHybridProxy.getAddress())).to.be.equal(0n)
+  })
   it('Should update state correctly when burning two Samurai NFT', async () => {
     const fixture = await loadFixture(deployDragonHybridFixture)
     const vault = await fixture.dragonHybrid.vault()

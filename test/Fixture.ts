@@ -2,7 +2,7 @@ import { ethers, ignition } from 'hardhat'
 import { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/signers'
 
 import { SwapHelper } from '../typechain-types/contracts/mocks'
-import { IDragonX, DragonHybrid, ITitanX, DragonBurnProxy } from '../typechain-types'
+import { IDragonX, DragonHybrid, ITitanX, DragonBurnProxy, BurnDragonHybridProxy } from '../typechain-types'
 import IgniteDragonHybrid from '../ignition/modules/DragonHybrid'
 
 import * as Constants from './Constants'
@@ -12,6 +12,7 @@ export interface Fixture {
   titanX: ITitanX;
   dragonHybrid: DragonHybrid;
   dragonBurnProxy: DragonBurnProxy;
+  burnDragonHybridProxy: BurnDragonHybridProxy;
   swap: SwapHelper;
   genesis: HardhatEthersSigner;
   user: HardhatEthersSigner;
@@ -30,6 +31,7 @@ export async function deployDragonHybridFixture(): Promise<Fixture> {
 
   // Factories
   const fSwap = await ethers.getContractFactory('SwapHelper')
+  const fBurnDragonHybridProxy = await ethers.getContractFactory('BurnDragonHybridProxy')
 
   // Deployed contracts
   const dragonX = await ethers.getContractAt('IDragonX', Constants.DRAGONX_ADDRESS)
@@ -37,6 +39,7 @@ export async function deployDragonHybridFixture(): Promise<Fixture> {
 
   // Deploy Others
   const swap = await fSwap.deploy()
+  const burnDragonHybridProxy = await fBurnDragonHybridProxy.deploy()
 
   // Market buy TitanX
   await swap.connect(genesis).swapETHForTitanX({ value: ethers.parseEther('10') })
@@ -62,7 +65,7 @@ export async function deployDragonHybridFixture(): Promise<Fixture> {
   const dragonHybrid: DragonHybrid = deployment.dragonHybrid as unknown as DragonHybrid
   const dragonBurnProxy: DragonBurnProxy = deployment.dragonBurnProxy as unknown as DragonBurnProxy
 
-  return { dragonX, titanX, dragonHybrid, dragonBurnProxy, swap, genesis, user, others }
+  return { dragonX, titanX, dragonHybrid, dragonBurnProxy, swap, genesis, user, others, burnDragonHybridProxy }
 }
 
 export function getDragonDetails(dragonType: Constants.DragonTypes): DragonDetails {

@@ -100,14 +100,14 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
     // -----------------------------------------
     /**
      * Emitted when a NFT is minted
-     * @param to the new owner
+     * @param owner the new owner
      * @param tokenId the token ID (NFT ID)
      * @param dragonType the dragon type
      * @param lockupAmount the amount locked in the bridge contract
      * @param fee the fee paid for minting (in liquid TitanX)
      */
     event Minted(
-        address indexed to,
+        address indexed owner,
         uint256 indexed tokenId,
         DragonTypes dragonType,
         uint256 lockupAmount,
@@ -116,14 +116,14 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
 
     /**
      * Emitted when a NFT is burned
-     * @param from the owner of the NFT
+     * @param owner the owner of the NFT
      * @param tokenId the token ID (NFT ID)
      * @param dragonType the dragon type
      * @param releasedAmount the released amount (released from bridge vault)
      * @param fee the fee payed to burn the token (in liquid DragonX)
      */
     event Burned(
-        address indexed from,
+        address indexed owner,
         uint256 indexed tokenId,
         DragonTypes dragonType,
         uint256 releasedAmount,
@@ -253,7 +253,7 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
 
         // Setting an "auth" arguments enables the `_isAuthorized` check which verifies that the token exists
         // (from != 0). Therefore, it is not needed to verify that the return value is not 0 here.
-        address from = _update(address(0), tokenId, _msgSender());
+        address owner = _update(address(0), tokenId, _msgSender());
 
         // Determine locked amount and burn fee based on the dragon type
         (, uint256 burnFee, uint256 lockAmount) = getDragonDetails(dragonType);
@@ -266,11 +266,11 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
         totalBurnFee += burnFee;
 
         // Release tokens to NFT owner
-        dragonX.safeTransfer(_msgSender(), lockAmount);
+        dragonX.safeTransfer(owner, lockAmount);
         vault -= lockAmount;
 
         // Emit event
-        emit Burned(from, tokenId, dragonType, lockAmount, burnFee);
+        emit Burned(owner, tokenId, dragonType, lockAmount, burnFee);
     }
 
     /**
