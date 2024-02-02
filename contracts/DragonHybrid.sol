@@ -48,11 +48,6 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
     // State variables
     // -----------------------------------------
     /**
-     * @notice maps NFT id to its metadata
-     */
-    mapping(uint256 => DragonTypes) public tokenIdToDragonType;
-
-    /**
      * @notice the current total supply der individual dragon type
      */
     mapping(DragonTypes dragonType => uint256 totalSupply)
@@ -94,6 +89,11 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
      * @dev the burn proxy contract for the burn fee
      */
     address private _burnProxyAddress;
+
+    /**
+     * @notice maps NFT id to its metadata
+     */
+    mapping(uint256 => DragonTypes) private _tokenIdToDragonType;
 
     // -----------------------------------------
     // Events
@@ -223,7 +223,7 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
         newTokenId = _nextTokenId;
 
         // Map token ID to dragon type
-        tokenIdToDragonType[newTokenId] = dragonType;
+        _tokenIdToDragonType[newTokenId] = dragonType;
 
         // Mint the new NFT (which will update balance tracking)
         _mint(_msgSender(), newTokenId);
@@ -249,7 +249,7 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
     function burn(uint256 tokenId) external {
         IDragonX dragonX = IDragonX(DRAGONX_ADDRESS);
         DragonBurnProxy burnProxy = DragonBurnProxy(payable(_burnProxyAddress));
-        DragonTypes dragonType = tokenIdToDragonType[tokenId];
+        DragonTypes dragonType = _tokenIdToDragonType[tokenId];
 
         // Setting an "auth" arguments enables the `_isAuthorized` check which verifies that the token exists
         // (from != 0). Therefore, it is not needed to verify that the return value is not 0 here.
@@ -271,6 +271,22 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
 
         // Emit event
         emit Burned(owner, tokenId, dragonType, lockAmount, burnFee);
+    }
+
+    /**
+     * @dev Returns the dragon type associated with a given tokenId.
+     * Requires that the tokenId exists (is owned), otherwise,
+     * it reverts with `ERC721NonexistentToken`.
+     *
+     * @param tokenId The token ID for which to query the dragon type.
+     * @return dragonType The type of the dragon associated with the given tokenId.
+     */
+    function tokenIdToDragonType(
+        uint256 tokenId
+    ) external view returns (DragonTypes dragonType) {
+        // Reverts with ERC721NonexistentToken
+        _requireOwned(tokenId);
+        return _tokenIdToDragonType[tokenId];
     }
 
     /**
@@ -309,7 +325,7 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
         // Loop to populate the tokenIds
         for (uint256 idx = 0; idx < ownerBalance; idx++) {
             uint256 tokenId = tokenOfOwnerByIndex(owner, idx);
-            DragonTypes dragonType = tokenIdToDragonType[tokenId];
+            DragonTypes dragonType = _tokenIdToDragonType[tokenId];
 
             if (dragonType == DragonTypes.Apprentice) {
                 ownerInfo.Apprentice.tokenIds[counters[0]++] = tokenId;
@@ -358,7 +374,7 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
         uint256 tokenId
     ) public view virtual override returns (string memory) {
         _requireOwned(tokenId);
-        DragonTypes dragonType = tokenIdToDragonType[tokenId];
+        DragonTypes dragonType = _tokenIdToDragonType[tokenId];
 
         string memory baseURI = _baseURI();
         return
@@ -423,7 +439,7 @@ contract DragonHybrid is ERC721Enumerable, Ownable2Step {
         address auth
     ) internal virtual override returns (address) {
         address previousOwner = super._update(to, tokenId, auth);
-        DragonTypes dragonType = tokenIdToDragonType[tokenId];
+        DragonTypes dragonType = _tokenIdToDragonType[tokenId];
 
         if (previousOwner == address(0)) {
             _addDragonToTotalDragonSupply(dragonType);

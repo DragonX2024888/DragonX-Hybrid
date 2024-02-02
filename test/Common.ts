@@ -327,4 +327,20 @@ describe('Common Tests', () => {
     expect(await dragonHybrid.balanceOfDragon(otherUser.address, Constants.DragonTypes.Apprentice)).to.be.equal(1n)
     expect(await dragonHybrid.balanceOfDragon(otherUser.address, Constants.DragonTypes.Ninja)).to.be.equal(1n)
   })
+  it('Should revert if trying to query the dragon type for token-id 0', async () => {
+    const { dragonHybrid } = await loadFixture(deployDragonHybridFixture)
+    await expect(dragonHybrid.tokenIdToDragonType(0n)).to.be.revertedWithCustomError(dragonHybrid, 'ERC721NonexistentToken')
+  })
+  it('Should revert if trying to query the dragon type for a burned token ID', async () => {
+    const fixture = await loadFixture(deployDragonHybridFixture)
+    const { user, dragonHybrid } = fixture
+
+    await prepareMintNft(fixture, Constants.DragonTypes.Apprentice)
+    await dragonHybrid.connect(user).mint(Constants.DragonTypes.Apprentice)
+    expect(await dragonHybrid.tokenIdToDragonType(1n)).to.be.equal(Constants.DragonTypes.Apprentice)
+
+    await prepareBurnNft(fixture, 1n)
+    await dragonHybrid.connect(user).burn(1n)
+    await expect(dragonHybrid.tokenIdToDragonType(0n)).to.be.revertedWithCustomError(dragonHybrid, 'ERC721NonexistentToken')
+  })
 })
