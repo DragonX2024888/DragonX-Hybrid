@@ -3,6 +3,9 @@
   "packageManager": "yarn@4.0.2",
   "scripts": {
     "contracts:cloc": "cloc contracts --exclude-dir mocks",
+    "contracts:deploy-local": "hardhat ignition deploy ignition/modules/DragonHybrid.ts --network frame_local --parameters ignition/parameters.json",
+    "contracts:deploy": "hardhat ignition deploy ignition/modules/DragonHybrid.ts --network frame_mainnet --parameters ignition/parameters.json",
+    "contracts:verify": "hardhat ignition verify chain-1",
     "contracts:compile": "hardhat compile",
     "contracts:size": "hardhat size-contracts",
     "lint": "eslint . --ext .ts -c .eslintrc --fix && hardhat check",
