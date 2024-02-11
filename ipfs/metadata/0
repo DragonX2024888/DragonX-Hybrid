@@ -1,0 +1,23 @@
+{
+  "name": "Apprentice",
+  "description": "A brave apprentice stepping into the realm of the dragons.",
+  "image": "ipfs://bafybeiewjxifpylzpkhxiusp2jpxsllmm23lmqdqptzjfr7arhwg2klhbi/0.jpg",
+  "attributes": [
+    {
+      "trait_type": "Rank",
+      "value": "Apprentice"
+    },
+    {
+      "trait_type": "DragonX Required for Minting",
+      "value": 8800000
+    },
+    {
+      "trait_type": "TitanX Mint Fee",
+      "value": 8800
+    },
+    {
+      "trait_type": "DragonX Burn Fee",
+      "value": 8800
+    }
+  ]
+}

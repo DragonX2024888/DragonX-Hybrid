@@ -1,0 +1,23 @@
+{
+  "name": "Emperor",
+  "description": "The supreme ruler of the DragonX empire.",
+  "image": "ipfs://bafybeiewjxifpylzpkhxiusp2jpxsllmm23lmqdqptzjfr7arhwg2klhbi/4.jpg",
+  "attributes": [
+    {
+      "trait_type": "Rank",
+      "value": "Emperor"
+    },
+    {
+      "trait_type": "DragonX Required for Minting",
+      "value": 88000000000
+    },
+    {
+      "trait_type": "TitanX Mint Fee",
+      "value": 88000000
+    },
+    {
+      "trait_type": "DragonX Burn Fee",
+      "value": 88000000
+    }
+  ]
+}

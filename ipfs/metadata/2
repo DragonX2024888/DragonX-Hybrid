@@ -1,0 +1,23 @@
+{
+  "name": "Samurai",
+  "description": "A noble samurai committed to the DragonX cause.",
+  "image": "ipfs://bafybeiewjxifpylzpkhxiusp2jpxsllmm23lmqdqptzjfr7arhwg2klhbi/2.jpg",
+  "attributes": [
+    {
+      "trait_type": "Rank",
+      "value": "Samurai"
+    },
+    {
+      "trait_type": "DragonX Required for Minting",
+      "value": 888000000
+    },
+    {
+      "trait_type": "TitanX Mint Fee",
+      "value": 888000
+    },
+    {
+      "trait_type": "DragonX Burn Fee",
+      "value": 888000
+    }
+  ]
+}

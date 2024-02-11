@@ -53,8 +53,7 @@ describe('Common Tests', () => {
   })
   it('Should return base URI based on Dragon Type', async () => {
     const fixture = await loadFixture(deployDragonHybridFixture)
-    const { user, dragonHybrid, genesis } = fixture
-    await dragonHybrid.connect(genesis).setBaseURI('https://test.com/')
+    const { user, dragonHybrid } = fixture
 
     await prepareMintNft(fixture, Constants.DragonTypes.Samurai)
     await dragonHybrid.connect(user).mint(Constants.DragonTypes.Samurai)
@@ -77,16 +76,46 @@ describe('Common Tests', () => {
     await prepareMintNft(fixture, Constants.DragonTypes.Shogun)
     await dragonHybrid.connect(user).mint(Constants.DragonTypes.Shogun)
 
-    expect(await dragonHybrid.tokenURI(1)).to.be.equal(`https://test.com/${Constants.DragonTypes.Samurai}`)
-    expect(await dragonHybrid.tokenURI(2)).to.be.equal(`https://test.com/${Constants.DragonTypes.Ninja}`)
-    expect(await dragonHybrid.tokenURI(3)).to.be.equal(`https://test.com/${Constants.DragonTypes.Apprentice}`)
-    expect(await dragonHybrid.tokenURI(4)).to.be.equal(`https://test.com/${Constants.DragonTypes.Emperor}`)
-    expect(await dragonHybrid.tokenURI(5)).to.be.equal(`https://test.com/${Constants.DragonTypes.Shogun}`)
-    expect(await dragonHybrid.tokenURI(6)).to.be.equal(`https://test.com/${Constants.DragonTypes.Samurai}`)
-    expect(await dragonHybrid.tokenURI(7)).to.be.equal(`https://test.com/${Constants.DragonTypes.Ninja}`)
-    expect(await dragonHybrid.tokenURI(8)).to.be.equal(`https://test.com/${Constants.DragonTypes.Apprentice}`)
-    expect(await dragonHybrid.tokenURI(9)).to.be.equal(`https://test.com/${Constants.DragonTypes.Emperor}`)
-    expect(await dragonHybrid.tokenURI(10)).to.be.equal(`https://test.com/${Constants.DragonTypes.Shogun}`)
+    expect(await dragonHybrid.tokenURI(1))
+      .to.be.equal(
+        `ipfs://bafybeid2kp3p4k45ypzjpdixncjl7qabvh54byw4v46lenrrgksbiwcozm/${Constants.DragonTypes.Samurai}`,
+      )
+    expect(await dragonHybrid.tokenURI(2))
+      .to.be.equal(
+        `ipfs://bafybeid2kp3p4k45ypzjpdixncjl7qabvh54byw4v46lenrrgksbiwcozm/${Constants.DragonTypes.Ninja}`,
+      )
+    expect(await dragonHybrid.tokenURI(3))
+      .to.be.equal(
+        `ipfs://bafybeid2kp3p4k45ypzjpdixncjl7qabvh54byw4v46lenrrgksbiwcozm/${Constants.DragonTypes.Apprentice}`,
+      )
+    expect(await dragonHybrid.tokenURI(4))
+      .to.be.equal(
+        `ipfs://bafybeid2kp3p4k45ypzjpdixncjl7qabvh54byw4v46lenrrgksbiwcozm/${Constants.DragonTypes.Emperor}`,
+      )
+    expect(await dragonHybrid.tokenURI(5))
+      .to.be.equal(
+        `ipfs://bafybeid2kp3p4k45ypzjpdixncjl7qabvh54byw4v46lenrrgksbiwcozm/${Constants.DragonTypes.Shogun}`,
+      )
+    expect(await dragonHybrid.tokenURI(6))
+      .to.be.equal(
+        `ipfs://bafybeid2kp3p4k45ypzjpdixncjl7qabvh54byw4v46lenrrgksbiwcozm/${Constants.DragonTypes.Samurai}`,
+      )
+    expect(await dragonHybrid.tokenURI(7))
+      .to.be.equal(
+        `ipfs://bafybeid2kp3p4k45ypzjpdixncjl7qabvh54byw4v46lenrrgksbiwcozm/${Constants.DragonTypes.Ninja}`,
+      )
+    expect(await dragonHybrid.tokenURI(8))
+      .to.be.equal(
+        `ipfs://bafybeid2kp3p4k45ypzjpdixncjl7qabvh54byw4v46lenrrgksbiwcozm/${Constants.DragonTypes.Apprentice}`,
+      )
+    expect(await dragonHybrid.tokenURI(9))
+      .to.be.equal(
+        `ipfs://bafybeid2kp3p4k45ypzjpdixncjl7qabvh54byw4v46lenrrgksbiwcozm/${Constants.DragonTypes.Emperor}`,
+      )
+    expect(await dragonHybrid.tokenURI(10))
+      .to.be.equal(
+        `ipfs://bafybeid2kp3p4k45ypzjpdixncjl7qabvh54byw4v46lenrrgksbiwcozm/${Constants.DragonTypes.Shogun}`,
+      )
   })
   it('Should revert when trying to query base URI for non existing NFT', async () => {
     const { dragonHybrid } = await loadFixture(deployDragonHybridFixture)

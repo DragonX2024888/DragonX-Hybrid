@@ -4,6 +4,7 @@ import { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/signers'
 import { SwapHelper } from '../typechain-types/contracts/mocks'
 import { IDragonX, DragonHybrid, ITitanX, DragonBurnProxy, BurnDragonHybridProxy } from '../typechain-types'
 import IgniteDragonHybrid from '../ignition/modules/DragonHybrid'
+import IgnitionParameters from '../ignition/parameters.json'
 
 import * as Constants from './Constants'
 
@@ -56,11 +57,7 @@ export async function deployDragonHybridFixture(): Promise<Fixture> {
 
   // Deploy DragonX-Hybrid with ignition
   const deployment = await ignition.deploy(IgniteDragonHybrid, {
-    parameters: {
-      DragonHybrid: {
-        baseURI: 'https://test.com/',
-      },
-    },
+    parameters: IgnitionParameters,
   })
   const dragonHybrid: DragonHybrid = deployment.dragonHybrid as unknown as DragonHybrid
   const dragonBurnProxy: DragonBurnProxy = deployment.dragonBurnProxy as unknown as DragonBurnProxy

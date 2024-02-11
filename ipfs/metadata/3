@@ -1,0 +1,23 @@
+{
+  "name": "Shogun",
+  "description": "A shogun with unmatched authority in the DragonX world.",
+  "image": "ipfs://bafybeiewjxifpylzpkhxiusp2jpxsllmm23lmqdqptzjfr7arhwg2klhbi/3.jpg",
+  "attributes": [
+    {
+      "trait_type": "Rank",
+      "value": "Shogun"
+    },
+    {
+      "trait_type": "DragonX Required for Minting",
+      "value": 8800000000
+    },
+    {
+      "trait_type": "TitanX Mint Fee",
+      "value": 8800000
+    },
+    {
+      "trait_type": "DragonX Burn Fee",
+      "value": 8800000
+    }
+  ]
+}
